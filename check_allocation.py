@@ -2,6 +2,7 @@
 
 import json
 import requests
+import ipaddress
 from argparse import ArgumentParser
 
 class BGP_CA():
@@ -34,24 +35,52 @@ class BGP_CA():
 		ptr_record = ip_data.get('ptr_record')
 		
 		prefix_data = ip_data.get('prefixes')
+		prefix_list = []
 		for prefix in prefix_data:
-			larger_subnet = prefix.get('prefix')
-			allocation_company = prefix.get('description')
-			allocation_country = prefix.get('country_code')
-			as_data = prefix.get('asn')
-			advertisement_as = 'AS{0}'.format(as_data.get('asn'))
-			advertisement_company = as_data.get('description')
+			prefix_list.append(prefix.get('prefix'))
+		
+		most_specific = self.most_specific_subnet(prefix_list)
+		
+		for prefix in prefix_data:
+			if ipaddress.ip_network(prefix.get('prefix')) == ipaddress.ip_network(most_specific):
+				prefix_data = prefix
+		
+		subnet = prefix_data.get('prefix')
+		allocation_company = prefix_data.get('description')
+		allocation_country = prefix_data.get('country_code')
+		as_data = prefix_data.get('asn')
+		advertisement_as = 'AS{0}'.format(as_data.get('asn'))
+		advertisement_company = as_data.get('description')
 
 		allocation_data = ip_data.get('rir_allocation')
 		routing_information_registry = allocation_data.get('rir_name')
 		allocation_date = allocation_data.get('date_allocated')
 		
-		self.print_output(ptr_record, query, larger_subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country)
+		self.print_output(ptr_record, query, subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country)
 		
-	def print_output(self, ptr_record, query, larger_subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country):
+	def most_specific_subnet(self, prefix_list):
+		current_specific = ipaddress.ip_network('0.0.0.0/0') 
+		for prefix in prefix_list:
+			prefix = ipaddress.ip_network(prefix)
+			subnet_of = self.is_subnet_of(prefix, current_specific)
+			if subnet_of:
+				current_specific = prefix
+		return current_specific
+			
+	def is_subnet_of(self, a, b):
+		# Taken from https://github.com/python/cpython/blob/v3.7.0/Lib/ipaddress.py#L976
+		# Python 3.4 does not support subnet_of, have taken the source function from 3.6
+		try:
+			if a.version != b.version:
+				raise TypeError('{0} and {1} are not of the same version'.format(a, b))
+			return (b.network_address <= a.network_address and b.broadcast_address >= a.broadcast_address)
+		except AttributeError:
+			raise TypeError('Unable to test subnet containment between {0} and {1}'.fromat(a, b))
+
+	def print_output(self, ptr_record, query, subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country):
 		print('\nIP: {0}'.format(query))
 		print('PTR Record: {0}\n'.format(ptr_record))
-		print('Advertised Prefix: {0}'.format(larger_subnet))
+		print('Advertised Prefix: {0}'.format(subnet))
 		print('Advertised by: {0} - {1}\n'.format(advertisement_as, advertisement_company))
 		print('Allocation RIR: {0}'.format(routing_information_registry))
 		print('Allocation Country: {0}'.format(allocation_country))
