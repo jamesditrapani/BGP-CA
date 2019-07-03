@@ -41,7 +41,9 @@ class BGP_CA():
 		
 		most_specific = self.most_specific_subnet(prefix_list)
 		
+		total_advertisements = 0
 		for prefix in prefix_data:
+			total_advertisements = total_advertisements + 1
 			if ipaddress.ip_network(prefix.get('prefix')) == ipaddress.ip_network(most_specific):
 				prefix_data = prefix
 		
@@ -56,7 +58,7 @@ class BGP_CA():
 		routing_information_registry = allocation_data.get('rir_name')
 		allocation_date = allocation_data.get('date_allocated')
 		
-		self.print_output(ptr_record, query, subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country)
+		self.print_output(ptr_record, query, subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country, total_advertisements)
 		
 	def most_specific_subnet(self, prefix_list):
 		current_specific = ipaddress.ip_network('0.0.0.0/0') 
@@ -77,9 +79,10 @@ class BGP_CA():
 		except AttributeError:
 			raise TypeError('Unable to test subnet containment between {0} and {1}'.fromat(a, b))
 
-	def print_output(self, ptr_record, query, subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country):
+	def print_output(self, ptr_record, query, subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country, total_advertisements):
 		print('\nIP: {0}'.format(query))
 		print('PTR Record: {0}\n'.format(ptr_record))
+		print('Total Advertisements: {0}'.format(total_advertisements))
 		print('Advertised Prefix: {0}'.format(subnet))
 		print('Advertised by: {0} - {1}\n'.format(advertisement_as, advertisement_company))
 		print('Allocation RIR: {0}'.format(routing_information_registry))
