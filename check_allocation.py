@@ -19,11 +19,11 @@ class BGP_CA():
 		arguments = parser.parse_args()
 		json_data = self.grab_information(arguments.ip)
 		self.parse_data(json_data, arguments.ip)
-
+	@classmethod
 	def import_from(self, query):
 		json_data = self.grab_information(query)
 		return json_data
-
+	@classmethod
 	def grab_information(self, query):
 		api_url = 'https://api.bgpview.io/ip/{0}'.format(query)
 		session = requests.session()
