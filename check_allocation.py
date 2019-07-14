@@ -18,10 +18,11 @@ class BGP_CA():
 		)
 		arguments = parser.parse_args()
 		json_data = self.grab_information(arguments.ip)
-		if __name__ == "__main__":
-			self.parse_data(json_data, arguments.ip)
-		else:
-			return json_data
+		self.parse_data(json_data, arguments.ip)
+
+	def import_from(self, query):
+		json_data = self.grab_information(query)
+		return json_data
 
 	def grab_information(self, query):
 		api_url = 'https://api.bgpview.io/ip/{0}'.format(query)
