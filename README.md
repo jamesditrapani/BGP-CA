@@ -50,9 +50,10 @@ print(returned_json)
 ```
 
 ## To do
-- Allow subnets to be parsed
-- Move to RIS live BGP feed
-- Add argument to show all advertisements
+- [x] ~~Add class import support~~
+- [ ] Allow subnets to be parsed
+- [ ] Move to RIS live BGP feed
+- [ ] Add argument to show all advertisements
 
 ## Authors
 * **James Di Trapani** - [Github](https://github.com/jamesditrapani)
