@@ -17,14 +17,18 @@ class BGP_CA():
 			help = 'IPv4 or IPv6 sub aggregate address you wish to recieve information on'
 		)
 		arguments = parser.parse_args()
-		self.grab_information(arguments.ip)
+		json_data = self.grab_information(arguments.ip)
+		if __name__ == "__main__":
+			self.parse_data(json_data, arguments.ip)
+		else:
+			return json_data
 
 	def grab_information(self, query):
 		api_url = 'https://api.bgpview.io/ip/{0}'.format(query)
 		session = requests.session()
 		get_data = session.get(api_url)
 		json_data = get_data.json()
-		self.parse_data(json_data, query)
+		return json_data
 
 	def parse_data(self, json_data, query):
 		return_status = json_data.get('status')
@@ -77,7 +81,7 @@ class BGP_CA():
 				raise TypeError('{0} and {1} are not of the same version'.format(a, b))
 			return (b.network_address <= a.network_address and b.broadcast_address >= a.broadcast_address)
 		except AttributeError:
-			raise TypeError('Unable to test subnet containment between {0} and {1}'.fromat(a, b))
+			raise TypeError('Unable to test subnet containment between {0} and {1}'.format(a, b))
 
 	def print_output(self, ptr_record, query, subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country, total_advertisements):
 		print('\nIP: {0}'.format(query))
