@@ -40,7 +40,7 @@ When importing the class, run using the `import_from()` function. This will curr
 from check_allocation import BGP_CA
 
 code = BGP_CA
-returned_json = code.import_from('8.8.8.8')
+returned_json = code.grab_information('8.8.8.8')
 print(returned_json)
 ```
 
