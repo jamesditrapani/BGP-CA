@@ -33,7 +33,7 @@ Allocated Date: 1992-12-01 00:00:00
 ```
 
 ## Importing class
-When importing the class, run using the `import_from()` function. This will currently only take an IP address and return the raw JSON data
+When importing the class, run using the `grab_information()` function. This will currently only take an IP address and return the raw JSON data
 
 ### Code example
 ```python
