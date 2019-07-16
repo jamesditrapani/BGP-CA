@@ -7,22 +7,6 @@ from argparse import ArgumentParser
 
 class BGP_CA():
 
-	def main(self):
-		parser = ArgumentParser(
-			description = 'Display information on the current allocation of a sub aggregate address'
-		)
-		parser.add_argument(
-			'ip',
-			type = str,
-			help = 'IPv4 or IPv6 sub aggregate address you wish to recieve information on'
-		)
-		arguments = parser.parse_args()
-		json_data = self.grab_information(arguments.ip)
-		self.parse_data(json_data, arguments.ip)
-	@classmethod
-	def import_from(self, query):
-		json_data = self.grab_information(query)
-		return json_data
 	@classmethod
 	def grab_information(self, query):
 		api_url = 'https://api.bgpview.io/ip/{0}'.format(query)
@@ -98,4 +82,14 @@ class BGP_CA():
 
 if __name__ == "__main__":
 	current_allocation = BGP_CA()
-	current_allocation.main()
+	parser = ArgumentParser(
+		description = 'Display information on the current allocation of a sub aggregate address'
+	)
+	parser.add_argument(
+		'ip',
+		type = str,
+		help = 'IPv4 or IPv6 sub aggregate address you wish to recieve information on'
+	)
+	arguments = parser.parse_args()
+	json_data = current_allocation.grab_information(arguments.ip)
+	current_allocation.parse_data(json_data, arguments.ip)
