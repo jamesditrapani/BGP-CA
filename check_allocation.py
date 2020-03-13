@@ -13,44 +13,29 @@ class BGP_CA():
 		session = requests.session()
 		get_data = session.get(api_url)
 		json_data = get_data.json()
-		return json_data
+                return json_data
 
 	def parse_data(self, json_data, query):
-		return_status = json_data.get('status')
-		if return_status.lower() != 'ok':
-			print('{0}, please try again'.format(json_data.get('status_message')))
-		
-		ip_data = json_data.get('data')
-		ptr_record = ip_data.get('ptr_record')
-		
-		prefix_data = ip_data.get('prefixes')
+		if json_data['status'].lower() != 'ok':
+			print('{0}, please try again'.format(json_data['status_message']))
+	
+                prefix_data = json_data['data']['prefixes']
 		prefix_list = []
 		for prefix in prefix_data:
-			prefix_list.append(prefix.get('prefix'))
-		
+			prefix_list.append(prefix['prefix'])
+	    
 		most_specific = self.most_specific_subnet(prefix_list)
-		
-		total_advertisements = 0
+	    
 		for prefix in prefix_data:
-			total_advertisements = total_advertisements + 1
-			if ipaddress.ip_network(prefix.get('prefix')) == ipaddress.ip_network(most_specific):
+			if ipaddress.ip_network(prefix['prefix']) == ipaddress.ip_network(most_specific):
 				prefix_data = prefix
 		
-		subnet = prefix_data.get('prefix')
-		allocation_company = prefix_data.get('description')
-		allocation_country = prefix_data.get('country_code')
-		as_data = prefix_data.get('asn')
-		advertisement_as = 'AS{0}'.format(as_data.get('asn'))
-		advertisement_company = as_data.get('description')
-
-		allocation_data = ip_data.get('rir_allocation')
-		routing_information_registry = allocation_data.get('rir_name')
-		allocation_date = allocation_data.get('date_allocated')
+		advertisement_as = 'AS{0}'.format(prefix_data['asn']['asn'])
 		
-		self.print_output(ptr_record, query, subnet, allocation_company, advertisement_as, advertisement_company, routing_information_registry, allocation_date, allocation_country, total_advertisements)
+		self.print_output(json_data['data']['ptr_record'], query, prefix_data['prefix'], prefix_data['description'], advertisement_as, prefix_data['asn']['description'], json_data['data']['rir_allocation']['rir_name'], json_data['data']['rir_allocation']['date_allocated'], prefix_data['country_code'], len(prefix_data))
 		
 	def most_specific_subnet(self, prefix_list):
-		current_specific = ipaddress.ip_network('0.0.0.0/0') 
+		current_specific = ipaddress.ip_network(u'0.0.0.0/0') 
 		for prefix in prefix_list:
 			prefix = ipaddress.ip_network(prefix)
 			subnet_of = self.is_subnet_of(prefix, current_specific)
