@@ -9,7 +9,7 @@ class BGP_CA():
 
 	@classmethod
 	def grab_information(self, query):
-		api_url = 'https://api.bgpview.io/ip/{0}'.format(query)
+		api_url = 'https://bgptoolkit.net/api/ca/{0}'.format(query)
 		session = requests.session()
 		get_data = session.get(api_url)
 		json_data = get_data.json()
