@@ -8,7 +8,7 @@ class BGPCheckAdvertisement():
 	"""
 		Wrapper for bgptoolkit.net that provides quick & useful information to console for a given IP. 
 		
-		Essentiall for any Network Engineers toolkit.
+		Essential for any Network Engineers toolkit.
 
 	"""
 	def __init__(self, ip):
