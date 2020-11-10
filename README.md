@@ -17,7 +17,8 @@ optional arguments:
 
 ## Sample Output
 ```
-[james@web1.ditrapani.com.au][~/Github/BGP-CA]$ python3.4 check_allocation.py 8.8.8.8
+[james@web1.ditrapani.com.au][~/Github/BGP-CA]
+$ python check_allocation.py 8.8.8.8
 
 IP: 8.8.8.8
 PTR Record: dns.google
@@ -37,11 +38,10 @@ When importing the class, run using the `grab_information()` function. This will
 
 ### Code example
 ```python
-from check_allocation import BGP_CA
+from check_allocation import BGPCheckAdvertisement
 
-code = BGP_CA
-returned_json = code.grab_information('8.8.8.8')
-print(returned_json)
+code = BGPCheckAdvertisement('8.8.8.8')
+print(code.data)
 ```
 
 ### JSON return example
