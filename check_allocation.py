@@ -2,7 +2,7 @@
 import json, requests, ipaddress
 from argparse import ArgumentParser
 
-__author__ 'James Di Trapani <james@ditrapani.com.au>'
+__author__ = 'James Di Trapani <james@ditrapani.com.au>'
 
 class BGPCheckAdvertisement():
 	"""
@@ -26,7 +26,7 @@ class BGPCheckAdvertisement():
 		if self.data['status'].lower() != 'ok':
 			print('{0}, please try again'.format(json_data['status_message']))
 
-		prefix_data = json_data['data']['prefixes']
+		prefix_data = self.data['data']['prefixes']
 		prefix_list = []
 		for prefix in prefix_data:
 			prefix_list.append(prefix['prefix'])
@@ -39,27 +39,27 @@ class BGPCheckAdvertisement():
 		
 		prefix_data['asn']['asn'] = f'AS{prefix_data["asn"]["asn"]}'
 		
-		self.print_output(self.ip, json_data['data']['ptr_record'], prefix_data, len(prefix_data))
+		self.print_output(self.ip, self.data['data']['ptr_record'], prefix_data, self.data, len(self.data['data']['prefixes']))
 		
 	def most_specific_subnet(self, prefix_list):
 		current_specific = ipaddress.ip_network(u'0.0.0.0/0') 
 		for prefix in prefix_list:
 			prefix = ipaddress.ip_network(prefix)
-			subnet_of = ipaddress.subnet_of(prefix, current_specific)
+			subnet_of = prefix.subnet_of(current_specific)
 			if subnet_of:
 				current_specific = prefix
 		return current_specific
 
-	def print_output(self, query, ptr, pd, ta):
+	def print_output(self, query, ptr, pd, jd, ta):
 		print(f'\nIP: {query}')
 		print(f'PTR Record: {ptr}\n')
 		print(f'Total Advertisements: {ta}')
 		print(f'Advertised Prefix: {pd["prefix"]}')
 		print(f'Advertised by: {pd["asn"]["asn"]} - {pd["asn"]["description"]}\n')
-		print(f'Allocation RIR: {pd["data"]["rir_allocation"]["rir_name"]}')
+		print(f'Allocation RIR: {jd["data"]["rir_allocation"]["rir_name"]}')
 		print(f'Allocation Country: {pd["country_code"]}')
-		print(f'Allocation Company: {pd["description"]}')
-		print(f'Allocated Date: {pd["data"]["rir_allocation"]["data_allocated"]}\n')
+		print(f'Allocation Company: {pd["asn"]["description"]}')
+		print(f'Allocated Date: {jd["data"]["rir_allocation"]["date_allocated"]}\n')
 
 
 if __name__ == "__main__":
